@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Diario de Trabajo 2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="pb-12">
+    <div class="max-w-md mx-auto p-4 space-y-4">
+        <!-- Header -->
+        <div class="glass p-4 rounded-2xl flex items-center justify-between shadow-lg">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-clipboard-list text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Parte Diario 2.0</h1>
+                    <p class="text-xs text-slate-400">Generador WhatsApp</p>
+                </div>
+            </div>
+            <button onclick="copiarReporte()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+                <i class="fa-solid fa-check"></i> TODO LISTO
+            </button>
+        </div>
+
+        <!-- Encabezado Fijo -->
+        <div class="glass p-4 rounded-2xl space-y-3">
+            <div>
+                <label class="text-xs text-slate-400 font-medium">Nombre</label>
+                <input type="text" id="nombre" value="Sebastián Rodríguez" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs text-slate-400 font-medium">Fecha</label>
+                    <input type="text" id="fecha" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400 font-medium">Horas</label>
+                    <input type="number" id="horas" value="10" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario Agregar Pieza -->
+        <div class="glass p-4 rounded-2xl space-y-3 border-emerald-500/30 border">
+            <h2 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-plus-circle"></i> Agregar Pieza / Trabajo
+            </h2>
+            
+            <div>
+                <label class="text-xs text-slate-400 font-medium">Código / Nombre de Pieza</label>
+                <input type="text" id="pieza" placeholder="Ej: WW-8505801 o 1 brida de 1&quot;" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="text-xs text-slate-400 font-medium block mb-1">Ubicación</label>
+                <div class="flex flex-wrap gap-1.5" id="ubicacionBotones">
+                    <button type="button" onclick="seleccionarUbicacion('Taller de pintura', this)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 transition">Taller de pintura</button>
+                    <button type="button" onclick="seleccionarUbicacion('Taller de chorreo', this)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 transition">Taller de chorreo</button>
+                    <button type="button" onclick="seleccionarUbicacion('otro', this)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 transition">Otro</button>
+                </div>
+                <input type="text" id="ubicacionOtro" placeholder="Escribe el área (Ej: Área Nº 40)" class="hidden w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm mt-2 focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <div>
+                <label class="text-xs text-slate-400 font-medium">Tareas Realizadas</label>
+                <input type="text" id="tareas" placeholder="Ej: Blíster + Pirulo + Imprimación" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm mt-1 focus:outline-none focus:border-emerald-500">
+                
+                <!-- Botones Rápidos de Tareas -->
+                <div class="flex flex-wrap gap-1.5 mt-2">
+                    <button onclick="addTareaRapida('Chorreo')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300">+ Chorreo</button>
+                    <button onclick="addTareaRapida('Lijado')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300">+ Lijado</button>
+                    <button onclick="addTareaRapida('Pirulo')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300">+ Pirulo</button>
+                    <button onclick="addTareaRapida('Blíster')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300">+ Blíster</button>
+                    <button onclick="addTareaRapida('Imprimación')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300">+ Imprimación</button>
+                    <button onclick="addTareaRapida('2º mano de Imprimación')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300">+ 2º Imprimación</button>
+                    <button onclick="addTareaRapida('3º mano de Imprimación')" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-300">+ 3º Imprimación</button>
+                    <button onclick="addTareaRapida('Pintado de color verde')" class="text-xs bg-emerald-950 hover:bg-emerald-900 border border-emerald-700/50 rounded-lg px-2.5 py-1 text-emerald-300">+ Pintura verde</button>
+                    <button onclick="addTareaRapida('Pintado de color gris')" class="text-xs bg-slate-700 hover:bg-slate-600 border border-slate-500 rounded-lg px-2.5 py-1 text-slate-200">+ Pintura gris</button>
+                </div>
+            </div>
+
+            <button onclick="agregarPieza()" class="w-full bg-slate-800 hover:bg-slate-700 border border-emerald-500/40 text-emerald-400 font-semibold py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-plus"></i> Añadir a la lista
+            </button>
+        </div>
+
+        <!-- Lista de Piezas -->
+        <div id="listaPiezas" class="space-y-2"></div>
+
+        <!-- Vista Previa Texto -->
+        <div class="glass p-4 rounded-2xl space-y-2">
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-slate-400 font-medium">Vista Previa para WhatsApp</span>
+                <button onclick="copiarReporte()" class="text-xs text-emerald-400 hover:underline">Copiar</button>
+            </div>
+            <pre id="preview" class="bg-slate-950 p-3 rounded-xl text-xs text-slate-300 whitespace-pre-wrap font-mono border border-slate-800 min-h-[120px]"></pre>
+        </div>
+
+        <!-- Botón Guardar Archivo HTML local -->
+        <div class="pt-2">
+            <button onclick="descargarHTML()" class="w-full bg-slate-800/60 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 text-xs py-2 rounded-xl transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-download"></i> Descargar archivo App (HTML)
+            </button>
+        </div>
+    </div>
+
+    <!-- Notificación Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-500 text-slate-950 font-bold px-6 py-3 rounded-full shadow-2xl opacity-0 pointer-events-none transition-all duration-300 text-sm flex items-center gap-2">
+        <i class="fa-solid fa-circle-check"></i> ¡Copiado al portapapeles!
+    </div>
+
+    <script>
+        let piezasList = [];
+        let ubicacionSeleccionada = '';
+
+        // Inicializar Fecha automática del día de hoy al cargar la ventana
+        window.addEventListener('load', function() {
+            const hoy = new Date();
+            const dd = String(hoy.getDate()).padStart(2, '0');
+            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+            const yyyy = hoy.getFullYear();
+            
+            const fechaInput = document.getElementById('fecha');
+            if (fechaInput) {
+                fechaInput.value = `${dd}/${mm}/${yyyy}`;
+            }
+
+            // Listeners para actualizar vista previa dinámicamente al escribir
+            document.getElementById('nombre').addEventListener('input', render);
+            document.getElementById('fecha').addEventListener('input', render);
+            document.getElementById('horas').addEventListener('input', render);
+
+            render();
+        });
+
+        function seleccionarUbicacion(valor, btnElement) {
+            const botones = document.querySelectorAll('#ubicacionBotones button');
+            botones.forEach(b => {
+                b.classList.remove('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-300');
+                b.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-300');
+            });
+
+            const inputOtro = document.getElementById('ubicacionOtro');
+
+            if (ubicacionSeleccionada === valor && valor !== 'otro') {
+                ubicacionSeleccionada = '';
+                inputOtro.classList.add('hidden');
+                inputOtro.value = '';
+            } else {
+                ubicacionSeleccionada = valor;
+                btnElement.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-300');
+                btnElement.classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-300');
+
+                if (valor === 'otro') {
+                    inputOtro.classList.remove('hidden');
+                    inputOtro.focus();
+                } else {
+                    inputOtro.classList.add('hidden');
+                    inputOtro.value = '';
+                }
+            }
+        }
+
+        function getUbicacionActual() {
+            if (ubicacionSeleccionada === 'otro') {
+                return document.getElementById('ubicacionOtro').value.trim();
+            }
+            return ubicacionSeleccionada;
+        }
+
+        function addTareaRapida(texto) {
+            const input = document.getElementById('tareas');
+            if (input.value.trim() === '') {
+                input.value = texto;
+            } else {
+                input.value += ' + ' + texto;
+            }
+        }
+
+        function agregarPieza() {
+            const pieza = document.getElementById('pieza').value.trim();
+            const tareas = document.getElementById('tareas').value.trim();
+            const ubicacion = getUbicacionActual();
+
+            if (!pieza) {
+                alert('Escribe el código o descripción de la pieza');
+                return;
+            }
+
+            piezasList.push({ pieza, tareas, ubicacion });
+            document.getElementById('pieza').value = '';
+            document.getElementById('tareas').value = '';
+            
+            // Reset ubicación
+            ubicacionSeleccionada = '';
+            document.getElementById('ubicacionOtro').value = '';
+            document.getElementById('ubicacionOtro').classList.add('hidden');
+            document.querySelectorAll('#ubicacionBotones button').forEach(b => {
+                b.classList.remove('bg-emerald-500/20', 'border-emerald-500', 'text-emerald-300');
+                b.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-300');
+            });
+
+            render();
+        }
+
+        function eliminarPieza(index) {
+            piezasList.splice(index, 1);
+            render();
+        }
+
+        function generarTexto() {
+            const nombre = document.getElementById('nombre').value;
+            const fecha = document.getElementById('fecha').value;
+            const horas = document.getElementById('horas').value;
+
+            let texto = `📋 *REPORTE DIARIO DE TRABAJO*\n`;
+            texto += `👤 *${nombre}* | 📅 ${fecha} | ⏱️ ${horas}h\n\n`;
+
+            if (piezasList.length === 0) {
+                texto += `*(Agrega piezas arriba para ver el reporte)*`;
+            } else {
+                piezasList.forEach((item, idx) => {
+                    texto += `▪️ *${item.pieza}*\n`;
+                    if (item.tareas) texto += `↳ *Tareas:* ${item.tareas}\n`;
+                    if (item.ubicacion) texto += `📍 *Ubicación:* ${item.ubicacion}\n`;
+                    if (idx < piezasList.length - 1) texto += `\n`;
+                });
+            }
+
+            return texto.trim();
+        }
+
+        function render() {
+            const contenedor = document.getElementById('listaPiezas');
+            if (!contenedor) return;
+            
+            contenedor.innerHTML = '';
+            
+            piezasList.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'glass p-3 rounded-xl flex items-center justify-between text-sm';
+                card.innerHTML = `
+                    <div class="pr-2">
+                        <div class="font-bold text-slate-200">${item.pieza}</div>
+                        <div class="text-xs text-slate-400">${item.tareas || 'Sin tareas'} ${item.ubicacion ? '• ' + item.ubicacion : ''}</div>
+                    </div>
+                    <button type="button" onclick="eliminarPieza(${index})" class="text-rose-400 hover:text-rose-300 p-2">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                contenedor.appendChild(card);
+            });
+
+            const preview = document.getElementById('preview');
+            if (preview) {
+                preview.innerText = generarTexto();
+            }
+        }
+
+        function copiarReporte() {
+            const texto = generarTexto();
+            const textArea = document.createElement("textarea");
+            textArea.value = texto;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                const toast = document.getElementById('toast');
+                toast.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'pointer-events-none');
+                }, 2000);
+            } catch (err) {
+                console.error('Error al copiar: ', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        function descargarHTML() {
+            const blob = new Blob([document.documentElement.outerHTML], { type: "text/html" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "Reporte.html";
+            a.click();
+        }
+    </script>
+</body>
+</html>
